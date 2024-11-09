@@ -27,7 +27,7 @@ namespace Analizador_Lexico
             { 8, 8, 8, 8, 8, 8, 8, 8, 6, 8, 8}, // q5
             { 9, 9, 9, 9, 9, 9, 9, 8, 6, 3, 8}, // q6
             { 9, 9, 9, 9, 9, 9, 9, 8, 7, 8, 8}, // q7
-            { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8}, // q8
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9}, // q8
             { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9}, // q9
 
 
@@ -44,16 +44,17 @@ namespace Analizador_Lexico
         char E = 'E';
         char puntoComa = ';';
         char punto = '.';
-        char mas = '.';
-        char menos = '.';
-        char por = '.';
-        char div = '.';
+        char mas = '+';
+        char menos = '-';
+        char por = '*';
+        char div = '/';
         char enter = '\n';
         char espacio = ' ';
         int lineCount = 1;
         List<int> historialEstados = new List<int>();
         private void BtnStart_Click(object sender, EventArgs e)
         {
+            bandera = false;
             EDO = 0;
             count = 0;
             tamCad = 0;
@@ -91,16 +92,24 @@ namespace Analizador_Lexico
             }
         }
         char anteriorCarac;
+        bool bandera = false;
         public void ManejarCadena (ref List<char> cadena, int estado, char car) 
         {
+            //FALTA IMPLEMENTAR MAS CAMPO DE ESTADO
+            
             if (car == '\n')
                 lineCount++;
-            if (estado != 1 && estado != 12)
+            if (estado != 9 && estado != 8)
             {
                 cadena.Add(car);
             }
-            if (estado == 12)
+            if (estado == 9)
             {
+                if (bandera)
+                {
+                    MessageBox.Show("ERROR");
+                    
+                }
                 string cadenaF = "";
                 CheckPuntosFinales(ref cadena, car);
                 foreach (char caract in cadena)
@@ -112,19 +121,21 @@ namespace Analizador_Lexico
                 cadena.Clear();
                 EDO = 0;
             }
-            if (estado == 1)
+            if (estado == 8)
             {
+                bandera = true;
                 string cadenaF = "";
-                CheckPuntosFinales(ref cadena, car);
+                //CheckPuntosFinales(ref cadena, car);
                 cadena.Add(car);
-                foreach (char caract in cadena)
+                /*foreach (char caract in cadena)
                 {
                     cadenaF += caract;
-                }
-                if (cadenaF != "")
-                    Aceptados(1, cadenaF, lineCount);
-                cadena.Clear();
-                EDO = 0;
+                }*/
+
+                //if (cadenaF != "")
+                //    Aceptados(estado, cadenaF, lineCount);
+                //cadena.Clear();
+                //EDO = 0;
             }
             anteriorCarac = car;
             historialEstados.Add(EDO);
@@ -148,23 +159,26 @@ namespace Analizador_Lexico
         {
             switch (estado)
             {
-                case 2:
+                case 1:
                     agregarFila(lineaCount, cadenaF, "Natural");
                     break;
-                case 4:
+                case 6:
                     agregarFila(lineaCount, cadenaF, "Real");
                     break;
-                case 6:
+                case 4:
                     agregarFila(lineaCount, cadenaF, "Exponencial");
                     break;
-                case 9:
-                    agregarFila(lineaCount, cadenaF, "Exponencial");
-                    break;
-                case 11:
-                    agregarFila(lineaCount, cadenaF, "Exponencial");
+                case 2:
+                    agregarFila(lineaCount, cadenaF, "Identificador");
                     break;
                 case 7:
-                    agregarFila(lineaCount, cadenaF, "Porcentual");
+                    agregarFila(lineaCount, cadenaF, "Identificador");
+                    break;
+                case 8:
+                    agregarFila(lineaCount, cadenaF, "Rechazo");
+                    break;
+                case 9:
+                    agregarFila(lineaCount, cadenaF, "Guardado");
                     break;
                 default:
                     agregarFila(lineaCount, cadenaF, "Invalida");
@@ -182,8 +196,8 @@ namespace Analizador_Lexico
             if (cara == '/') return 6;
             if (let.Contains(cara)) return 7;
             if (nums.Contains(cara)) return 8;
-            if (cara == 'E') return 9;
-            if (cara == '.') return 11;
+            if (cara == 'E'|| cara == 'e') return 9;
+            if (cara == '.') return 10;
             return 0;
         }
 
