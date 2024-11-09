@@ -16,22 +16,21 @@ namespace Analizador_Lexico
         {
             InitializeComponent();
         }
-        int[,] tablaTrans =
+        int[,] tablaT =
         {
-            {12 ,2, 12, 12, 12, 12, 12 , 12}, //q0
-            {1 ,1, 1, 1, 1, 1, 1 , 1}, //q1
-            {1 ,2, 5, 3, 3, 7, 12, 12 }, //q2
-            {1 ,4, 1, 12, 12, 1, 12, 12 }, //q3
-            {1 ,4, 10, 13, 13, 7, 12, 12 }, //q4
-            {1 ,6, 1, 12, 12, 1, 12 , 12}, //q5
-            {1 ,6, 1, 8, 8, 1, 12, 12 }, //q6
-            {1 ,1, 1, 12, 12, 1 , 12, 12}, //q7
-            {1 ,9, 1, 12, 12, 1, 12, 12 }, //q8
-            {1 ,9, 1, 1, 1, 1, 12, 12 }, //q9
-            {1 ,11, 1, 1, 1, 1, 1, 1 }, //q10
-            {1 ,11, 1, 12, 12, 1, 12, 12 }, //q11
-            {12 ,12, 12, 12, 12, 12, 12, 12 }, //q12
-            {13 ,13, 13, 13, 13, 13, 12, 12 }, //q13
+//            (  )  ;  +  -  *  /  L  d  E  .
+            { 9, 9, 9, 9, 9, 9, 9, 2, 1, 2, 5}, // q0
+            { 9, 9, 9, 9, 9, 9, 9, 8, 1, 3, 5}, // q1
+            { 9, 9, 9, 9, 9, 9, 9, 2, 7, 2, 8}, // q2
+            { 8, 8, 8, 8, 8, 8, 8, 8, 4, 8, 8}, // q3
+            { 9, 9, 9, 9, 9, 9, 9, 8, 4, 8, 8}, // q4
+            { 8, 8, 8, 8, 8, 8, 8, 8, 6, 8, 8}, // q5
+            { 9, 9, 9, 9, 9, 9, 9, 8, 6, 3, 8}, // q6
+            { 9, 9, 9, 9, 9, 9, 9, 8, 7, 8, 8}, // q7
+            { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8}, // q8
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9}, // q9
+
+
         };
         int EDO = 0;
         int count = 0;
@@ -41,10 +40,14 @@ namespace Analizador_Lexico
             'a', 'b', 'c', 'd', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'ñ', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
         };
         char[] nums = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-        char porcentaje = '%';
+        char parAb = '(';
         char E = 'E';
-        char coma = ',';
+        char puntoComa = ';';
         char punto = '.';
+        char mas = '.';
+        char menos = '.';
+        char por = '.';
+        char div = '.';
         char enter = '\n';
         char espacio = ' ';
         int lineCount = 1;
@@ -61,7 +64,7 @@ namespace Analizador_Lexico
 
             string textoTotal = TxtText.Text + " ";
             tamCad = textoTotal.Length;
-            Automata(tablaTrans, ref EDO, count, tamCad, textoTotal);
+            Automata(tablaT, ref EDO, count, tamCad, textoTotal);
 
             int filaNum = 1;
             foreach(DataGridViewRow row in dgvTLexica.Rows)
@@ -126,6 +129,7 @@ namespace Analizador_Lexico
             anteriorCarac = car;
             historialEstados.Add(EDO);
         }
+        // No necesario
         public void CheckPuntosFinales(ref List<char> cadena, char car)
         {
             if (anteriorCarac == '.' && car == ' ' && cadena.Count > 0)
@@ -139,6 +143,7 @@ namespace Analizador_Lexico
                 cadena.RemoveAt(cadena.Count-1);
             }
         }
+        // Talvez no necesario
         public void Aceptados(int estado, string cadenaF, int lineaCount)
         {
             switch (estado)
@@ -168,15 +173,18 @@ namespace Analizador_Lexico
         }
         public int CaracterCheck (char cara)
         {
-            if (let.Contains(cara)) return 0;
-            if (nums.Contains(cara)) return 1;
-            if (E == cara) return 2;
-            if (coma == cara) return 3;
-            if (punto == cara) return 4;
-            if (porcentaje == cara) return 5;
-            if (espacio == cara) return 6;
-            if (enter == cara) return 7;
-            return 6;
+            if (cara == '(') return 0;
+            if (cara == ')') return 1;
+            if (cara == ';') return 2;
+            if (cara == '+') return 3;
+            if (cara == '-') return 4;
+            if (cara == '*') return 5;
+            if (cara == '/') return 6;
+            if (let.Contains(cara)) return 7;
+            if (nums.Contains(cara)) return 8;
+            if (cara == 'E') return 9;
+            if (cara == '.') return 11;
+            return 0;
         }
 
         private void BtnReset_Click(object sender, EventArgs e)
