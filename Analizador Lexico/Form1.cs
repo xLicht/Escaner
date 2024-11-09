@@ -56,7 +56,7 @@ namespace Analizador_Lexico
             tamCad = 0;
             lineCount = 1;
             historialEstados.Clear();
-            dgvRes.Rows.Clear();
+            dgvTLexica.Rows.Clear();
             anteriorCarac = '\0';
 
             string textoTotal = TxtText.Text + " ";
@@ -64,7 +64,7 @@ namespace Analizador_Lexico
             Automata(tablaTrans, ref EDO, count, tamCad, textoTotal);
 
             int filaNum = 1;
-            foreach(DataGridViewRow row in dgvRes.Rows)
+            foreach(DataGridViewRow row in dgvTLexica.Rows)
             {
                 row.Cells[0].Value = filaNum;
                 filaNum++;
@@ -72,7 +72,7 @@ namespace Analizador_Lexico
         }
         public void agregarFila(int lineaCoun, string cadeF, string tipo)
         {
-            dgvRes.Rows.Add(null, lineaCoun, cadeF, tipo);
+            dgvTLexica.Rows.Add(null, lineaCoun, cadeF, tipo);
         }
 
         public void Automata(int[,] TT, ref int edo, int cont, int tamCad, string cad)
@@ -192,7 +192,7 @@ namespace Analizador_Lexico
 
             historialEstados.Clear();
 
-            dgvRes.Rows.Clear();
+            dgvTLexica.Rows.Clear();
 
             TxtText.Clear();
 
