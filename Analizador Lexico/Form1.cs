@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Analizador_Lexico
 {
@@ -51,9 +52,14 @@ namespace Analizador_Lexico
         char enter = '\n';
         char espacio = ' ';
         int lineCount = 1;
+        //
+        int contador = 0;
+        string cadenaF = "";
+
         List<int> historialEstados = new List<int>();
         private void BtnStart_Click(object sender, EventArgs e)
         {
+            contador = 0;
             bandera = false;
             EDO = 0;
             count = 0;
@@ -87,6 +93,7 @@ namespace Analizador_Lexico
                 char car = cad[cont];
                 int carPointer = CaracterCheck(car);
                 edo = TT[edo, carPointer];
+                contador++;
                 ManejarCadena(ref cadena, edo, car);
                 cont++;
             }
@@ -105,41 +112,63 @@ namespace Analizador_Lexico
             }
             if (estado == 9)
             {
-                if (bandera)
+                if (bandera == true) 
                 {
-                    MessageBox.Show("ERROR");
-                    
+                    cadena.Add(car);
+                    if (tamCad == contador)
+                    {
+                        foreach (char caract in cadena)
+                        {
+                            cadenaF += caract;
+                        }
+                        if (cadenaF != "")
+                        {
+                            Aceptados(historialEstados.Last(), cadenaF, lineCount);
+                        }
+                        cadena.Clear();
+                        EDO = 0;
+                        anteriorCarac = car;
+                        historialEstados.Add(EDO);
+                    }
                 }
-                string cadenaF = "";
-                CheckPuntosFinales(ref cadena, car);
-                foreach (char caract in cadena)
+                else
                 {
-                    cadenaF += caract;
-                }
-                if (cadenaF != "")
+
+                    //CheckPuntosFinales(ref cadena, car);
+                    foreach (char caract in cadena)
+                    {
+                        cadenaF += caract;
+                    }
+                    if (cadenaF != "")
                     Aceptados(historialEstados.Last(), cadenaF, lineCount);
-                cadena.Clear();
-                EDO = 0;
+                    cadena.Clear();
+                    EDO = 0;
+                }
             }
+            
             if (estado == 8)
             {
                 bandera = true;
-                string cadenaF = "";
-                //CheckPuntosFinales(ref cadena, car);
                 cadena.Add(car);
-                /*foreach (char caract in cadena)
-                {
-                    cadenaF += caract;
-                }*/
-
-                //if (cadenaF != "")
-                //    Aceptados(estado, cadenaF, lineCount);
-                //cadena.Clear();
-                //EDO = 0;
             }
-            anteriorCarac = car;
-            historialEstados.Add(EDO);
+            if (bandera != true)
+            {
+               anteriorCarac = car;
+              historialEstados.Add(EDO);
+            }
         }
+        //Metodo Error
+        private bool Error(bool bandera)
+        {
+            if (bandera)
+            {              
+                return true; // Indica que hay un error y debe salir del bloque if
+            }
+            return false; // Indica que no hay error y puede continuar
+        }
+
+
+
         // No necesario
         public void CheckPuntosFinales(ref List<char> cadena, char car)
         {
