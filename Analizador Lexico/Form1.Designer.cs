@@ -56,6 +56,7 @@
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cmbDemos = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvTLexica)).BeginInit();
@@ -67,6 +68,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cmbDemos);
             this.groupBox1.Controls.Add(this.txtError);
             this.groupBox1.Controls.Add(this.textBox1);
             this.groupBox1.Controls.Add(this.BtnReset);
@@ -318,6 +320,20 @@
             this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
             this.dataGridViewTextBoxColumn3.ReadOnly = true;
             // 
+            // cmbDemos
+            // 
+            this.cmbDemos.FormattingEnabled = true;
+            this.cmbDemos.Items.AddRange(new object[] {
+            "100: Sin Error",
+            "101: Simbolo Desconocido",
+            "102: Elemento Invalido"});
+            this.cmbDemos.Location = new System.Drawing.Point(277, 311);
+            this.cmbDemos.Name = "cmbDemos";
+            this.cmbDemos.Size = new System.Drawing.Size(121, 24);
+            this.cmbDemos.TabIndex = 5;
+            this.cmbDemos.Text = "Demos";
+            this.cmbDemos.SelectedIndexChanged += new System.EventHandler(this.cmbDemos_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -376,6 +392,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.TextBox txtError;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.ComboBox cmbDemos;
     }
 }
 

@@ -20,50 +20,41 @@ namespace Analizador_Lexico
         Errores Error = new Errores();
         int[,] tablaT =
         {
-//            (  )  ;  +  -  *  /  L  d  E  .
-            { 9, 9, 9, 9, 9, 9, 9, 2, 1, 2, 5}, // q0
-            { 9, 9, 9, 9, 9, 9, 9, 8, 1, 3, 5}, // q1
-            { 9, 9, 9, 9, 9, 9, 9, 2, 7, 2, 8}, // q2
-            { 8, 8, 8, 8, 8, 8, 8, 8, 4, 8, 8}, // q3
-            { 9, 9, 9, 9, 9, 9, 9, 8, 4, 8, 8}, // q4
-            { 8, 8, 8, 8, 8, 8, 8, 8, 6, 8, 8}, // q5
-            { 9, 9, 9, 9, 9, 9, 9, 8, 6, 3, 8}, // q6
-            { 9, 9, 9, 9, 9, 9, 9, 8, 7, 8, 8}, // q7
-            { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9}, // q8
-            { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9}, // q9
+//            (  )  ;  +  -  *  /  L  d  E  .  n
+            { 9, 9, 9, 9, 9, 9, 9, 2, 1, 2, 5, 9}, // q0
+            { 9, 9, 9, 9, 9, 9, 9, 8, 1, 3, 5, 9}, // q1
+            { 9, 9, 9, 9, 9, 9, 9, 2, 7, 2, 8, 9}, // q2
+            { 8, 8, 8, 8, 8, 8, 8, 8, 4, 8, 8, 9}, // q3
+            { 9, 9, 9, 9, 9, 9, 9, 8, 4, 8, 8, 9}, // q4
+            { 8, 8, 8, 8, 8, 8, 8, 8, 6, 8, 8, 9}, // q5
+            { 9, 9, 9, 9, 9, 9, 9, 8, 6, 3, 8, 9}, // q6
+            { 9, 9, 9, 9, 9, 9, 9, 8, 7, 8, 8, 9}, // q7
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9}, // q8
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9}, // q9
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9}, // q10
 
 
         };
-        int EDO = 0;
-        int count = 0;
-        int tamCad = 0;
+        int EDO;
+        int count;
+        int tamCad;
         char[] let = {
             'A', 'B', 'C', 'D', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'Ñ', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
             'a', 'b', 'c', 'd', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'ñ', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
         };
         char[] nums = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-        List<Operadores> Operad = new List<Operadores> 
-        {new Operadores('+', new List<char>()), new Operadores('-', new List<char>()), new Operadores('*', new List<char>()), new Operadores('/', new List<char>())};
-        List<Delimitadores> Delim = new List<Delimitadores>
-        {new Delimitadores('(', new List<char>()), new Delimitadores(')', new List<char>()), new Delimitadores(';', new List<char>())};
-        List<Identificadores> Idents = new List<Identificadores>(); 
-        List<Constantes> Constan = new List<Constantes>(); 
-        //char parAb = '(';
-        //char E = 'E';
-        //char puntoComa = ';';
-        //char punto = '.';
-        //char mas = '+';
-        //char menos = '-';
-        //char por = '*';
-        //char div = '/';
-        //char enter = '\n';
-        //char espacio = ' ';
+        List<Operadores> Operad;
+        List<Delimitadores> Delim;
+        List<Identificadores> Idents;
+        List<Constantes> Constan;
         int delimVal;
         int Oper;
         int iden;
         int cons;
         int lineCount;
         bool bandera = false;
+        bool yafue = false;
+        bool banderaDesconocido = false;
         List<int> historialEstados = new List<int>();
         private void BtnStart_Click(object sender, EventArgs e)
         {
@@ -76,13 +67,20 @@ namespace Analizador_Lexico
             dgvTLexica.Rows.Clear();
             dgvTCons.Rows.Clear();
             dgvTIden.Rows.Clear();
-            anteriorCarac = '\0';
             delimVal = 50;
             Oper = 70;
             iden = 101;
             cons = 201;
+            yafue = false;
+            banderaDesconocido = false;
+            Constan = new List<Constantes>();
+            Idents = new List<Identificadores>();
+            Operad = new List<Operadores>
+            {new Operadores('+', new List<char>()), new Operadores('-', new List<char>()), new Operadores('*', new List<char>()), new Operadores('/', new List<char>())};
+            Delim = new List<Delimitadores>
+            {new Delimitadores('(', new List<char>()), new Delimitadores(')', new List<char>()), new Delimitadores(';', new List<char>())};
 
-            string textoTotal = TxtText.Text;
+            string textoTotal = TxtText.Text + '\n';
             tamCad = textoTotal.Length;
             Automata(tablaT, ref EDO, count, tamCad, textoTotal);
 
@@ -135,19 +133,15 @@ namespace Analizador_Lexico
                 {
                     edo = -1;
                 }
-                ManejarCadena(ref cadena, edo, car);
+                ManejarCadena(ref cadena, edo, car, cont);
                 cont++;
             }
+            if (bandera == false && banderaDesconocido == false && yafue == false)
+                Error.SinError(txtError);
         }
-        char anteriorCarac;
-        bool yafue = false;
-        bool banderaDesconocido = false;
-        public void ManejarCadena (ref List<char> cadena, int estado, char car) 
+        
+        public void ManejarCadena (ref List<char> cadena, int estado, char car, int conta) 
         {
-            //FALTA IMPLEMENTAR MAS CAMPO DE ESTADO
-            
-            if (car == '\n')
-                lineCount++;
             if (estado != 9 && estado != 8 && estado != -1)
             {
                 cadena.Add(car);
@@ -155,20 +149,19 @@ namespace Analizador_Lexico
             if (estado == 9)
             {
                 string cadenaF = "";
-                //CheckPuntosFinales(ref cadena, car);
                 foreach (char caract in cadena)
                 {
                     cadenaF += caract;
                 }
                 if (bandera && yafue == false)
                 {
-                    Error.ElementoInvalido(TxtText, txtError, lineCount);
+                    Error.ElementoInvalido(TxtText, txtError, lineCount, conta);
                     yafue = true;
                     return;
                 }
                 else if (banderaDesconocido && yafue == false)
                 {
-                    Error.SimboloDesconocido(TxtText, txtError, lineCount);
+                    Error.SimboloDesconocido(TxtText, txtError, lineCount, conta);
                     yafue = true;
                     return;
                 }
@@ -195,7 +188,8 @@ namespace Analizador_Lexico
                 cadena.Add(car);
                 EDO = 0;
             }
-            anteriorCarac = car;
+            if (car == '\n')
+                lineCount++;
             historialEstados.Add(EDO);
         }
         public void CheckOperadores(char cara, int lineaCoun)
@@ -240,21 +234,6 @@ namespace Analizador_Lexico
                 agregarFila(lineaCoun, cara.ToString(), "5", delimVal + 2);
             }
         }
-        // No necesario
-        public void CheckPuntosFinales(ref List<char> cadena, char car)
-        {
-            if (anteriorCarac == '.' && car == ' ' && cadena.Count > 0)
-            {
-                historialEstados.RemoveAt(historialEstados.Count - 1);
-                cadena.RemoveAt(cadena.Count-1);
-            }
-            if (anteriorCarac == ',' && car == ' ' && cadena.Count > 0)
-            {
-                historialEstados.RemoveAt(historialEstados.Count - 1);
-                cadena.RemoveAt(cadena.Count-1);
-            }
-        }
-        // Talvez no necesario
         public void Aceptados(int estado, string cadenaF, int lineaCount)
         {
             switch (estado)
@@ -275,7 +254,7 @@ namespace Analizador_Lexico
                     cons++;
                     break;
                 case 2:
-                    if (IsFirstTime(cadenaF, Idents) == -1) // Es la primera vez
+                    if (IsFirstTime(cadenaF, Idents) == -1)
                     {
                         Idents.Add(new Identificadores(cadenaF, new List<char> { (char)(lineaCount + '0') }, iden));
                         agregarFila(lineaCount, cadenaF, "1", iden);
@@ -288,7 +267,7 @@ namespace Analizador_Lexico
                     iden++;
                     break;
                 case 7:
-                    if (IsFirstTime(cadenaF, Idents) == -1) // Es la primera vez
+                    if (IsFirstTime(cadenaF, Idents) == -1)
                     {
                         Idents.Add(new Identificadores(cadenaF, new List<char> { (char)(lineaCount + '0') }, iden));
                         agregarFila(lineaCount, cadenaF, "1", iden);
@@ -300,9 +279,6 @@ namespace Analizador_Lexico
                     }
                     iden++;
                     break;
-//              case 8:
-//                  agregarFila(lineaCount, cadenaF, "Rechazo", );
-//                 break;
                 default:
                     agregarFila(lineaCount, cadenaF, "Invalida", 0);
                     break;
@@ -330,7 +306,8 @@ namespace Analizador_Lexico
             if (nums.Contains(cara)) return 8;
             if (cara == 'E'|| cara == 'e') return 9;
             if (cara == '.') return 10;
-            return 11; // algo que no va
+            if (cara == '\n') return 11;
+            return 12; // algo que no va
         }
 
         private void BtnReset_Click(object sender, EventArgs e)
@@ -350,12 +327,27 @@ namespace Analizador_Lexico
 
             TxtText.Clear();
 
-            anteriorCarac = '\0';
         }
 
         private void BtnSalir_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void cmbDemos_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbDemos.SelectedIndex == 0)
+            {
+                TxtText.Text = "(X1+B2);\r\n(Y1+B3*C4)+D4;\r\n(((VAR2+X1)));\r\n(PESO+(CARGO*DIF2));\r\n((X2+45-78*(12.34*3.56E45)+B2;";
+            }
+            if (cmbDemos.SelectedIndex == 1)
+            {
+                TxtText.Text = "(X1+B2);\r\n(Y1+B3*C4)+D4;\r\n(((VAR2+X1)));\r\n(PESO+(CARGO*DIF2));&\r\n((X2+45-78*(12.34*3.56E45)+B2;";
+            }
+            if(cmbDemos.SelectedIndex == 2)
+            {
+                TxtText.Text = "(X1+B2);\r\n(Y1+B3*C4)+D4;\r\n(((VAR2+X1)));\r\n(PESO+(CARGO*DIF2));\r\n((X2+45-78*(12.34*3.56EA45)+B2;";
+            }
         }
     }
 }
