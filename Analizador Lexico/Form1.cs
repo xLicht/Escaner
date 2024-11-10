@@ -44,6 +44,8 @@ namespace Analizador_Lexico
         {new Operadores('+', new List<char>()), new Operadores('-', new List<char>()), new Operadores('*', new List<char>()), new Operadores('/', new List<char>())};
         List<Delimitadores> Delim = new List<Delimitadores>
         {new Delimitadores('(', new List<char>()), new Delimitadores(')', new List<char>()), new Delimitadores(';', new List<char>())};
+        List<Identificadores> Idents = new List<Identificadores>(); 
+        List<Constantes> Constan = new List<Constantes>(); 
         //char parAb = '(';
         //char E = 'E';
         //char puntoComa = ';';
@@ -54,11 +56,11 @@ namespace Analizador_Lexico
         //char div = '/';
         //char enter = '\n';
         //char espacio = ' ';
-        int delimVal = 50;
-        int Oper = 70;
-        int iden = 100;
-        int cons = 200;
-        int lineCount = 1;
+        int delimVal;
+        int Oper;
+        int iden;
+        int cons;
+        int lineCount;
         List<int> historialEstados = new List<int>();
         private void BtnStart_Click(object sender, EventArgs e)
         {
@@ -69,7 +71,13 @@ namespace Analizador_Lexico
             lineCount = 1;
             historialEstados.Clear();
             dgvTLexica.Rows.Clear();
+            dgvTCons.Rows.Clear();
+            dgvTIden.Rows.Clear();
             anteriorCarac = '\0';
+            delimVal = 50;
+            Oper = 70;
+            iden = 101;
+            cons = 201;
 
             string textoTotal = TxtText.Text;
             tamCad = textoTotal.Length;
@@ -80,6 +88,28 @@ namespace Analizador_Lexico
             {
                 row.Cells[0].Value = filaNum;
                 filaNum++;
+            }
+            agregarFilaIdent(Idents);
+            agregarFilaCons(Constan);
+            
+        }
+        public void agregarFilaIdent (List<Identificadores> identif)
+        {
+            foreach(var item in identif)
+            {
+                string lineasTxt = "";
+                foreach(var c in item.Lineas)
+                {
+                    lineasTxt += c.ToString() + ", ";
+                }
+                dgvTIden.Rows.Add(item.Cadena, item.Codigo, lineasTxt.Remove(lineasTxt.Length -2));
+            }
+        }
+        public void agregarFilaCons(List<Constantes> constants)
+        {
+            foreach(var item in constants)
+            {
+                dgvTCons.Rows.Add(item.Cadena, item.Codigo, item.Lineas);
             }
         }
         public void agregarFila(int lineaCoun, string cadeF, string tipo, int codigo)
@@ -204,22 +234,43 @@ namespace Analizador_Lexico
             {
                 case 1:
                     agregarFila(lineaCount, cadenaF, "2", cons);
+                    Constan.Add(new Constantes(cadenaF, (char)(lineaCount + '0'), cons));
                     cons++;
                     break;
                 case 6:
                     agregarFila(lineaCount, cadenaF, "2", cons);
+                    Constan.Add(new Constantes(cadenaF, (char)(lineaCount + '0'), cons));
                     cons++;
                     break;
                 case 4:
                     agregarFila(lineaCount, cadenaF, "2", cons);
+                    Constan.Add(new Constantes(cadenaF, (char)(lineaCount + '0'), cons));
                     cons++;
                     break;
                 case 2:
-                    agregarFila(lineaCount, cadenaF, "1", iden);
+                    if (IsFirstTime(cadenaF, Idents) == -1) // Es la primera vez
+                    {
+                        Idents.Add(new Identificadores(cadenaF, new List<char> { (char)(lineaCount + '0') }, iden));
+                        agregarFila(lineaCount, cadenaF, "1", iden);
+                    }
+                    else
+                    {
+                        Idents[IsFirstTime(cadenaF, Idents)].Lineas.Add((char)(lineaCount + '0'));
+                        agregarFila(lineaCount, cadenaF, "1", Idents[IsFirstTime(cadenaF, Idents)].Codigo);
+                    }
                     iden++;
                     break;
                 case 7:
-                    agregarFila(lineaCount, cadenaF, "1", iden);
+                    if (IsFirstTime(cadenaF, Idents) == -1) // Es la primera vez
+                    {
+                        Idents.Add(new Identificadores(cadenaF, new List<char> { (char)(lineaCount + '0') }, iden));
+                        agregarFila(lineaCount, cadenaF, "1", iden);
+                    }
+                    else
+                    {
+                        Idents[IsFirstTime(cadenaF, Idents)].Lineas.Add((char)(lineaCount + '0'));
+                        agregarFila(lineaCount, cadenaF, "1", Idents[IsFirstTime(cadenaF, Idents)].Codigo);
+                    }
                     iden++;
                     break;
 //              case 8:
@@ -229,6 +280,15 @@ namespace Analizador_Lexico
                     agregarFila(lineaCount, cadenaF, "Invalida", 0);
                     break;
             }
+        }
+        public int IsFirstTime(string cadena, List<Identificadores> lista)
+        {
+            for (int i = 0; i<lista.Count; i++)
+            {
+                if (lista[i].Cadena == cadena)
+                    return i;
+            }
+            return -1;
         }
         public int CaracterCheck (char cara)
         {
