@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Analizador_Lexico
 {
@@ -16,6 +17,7 @@ namespace Analizador_Lexico
         {
             InitializeComponent();
         }
+        Errores Error = new Errores();
         int[,] tablaT =
         {
 //            (  )  ;  +  -  *  /  L  d  E  .
@@ -61,6 +63,7 @@ namespace Analizador_Lexico
         int iden;
         int cons;
         int lineCount;
+        bool bandera = false;
         List<int> historialEstados = new List<int>();
         private void BtnStart_Click(object sender, EventArgs e)
         {
@@ -124,49 +127,73 @@ namespace Analizador_Lexico
             {
                 char car = cad[cont];
                 int carPointer = CaracterCheck(car);
-                edo = TT[edo, carPointer];
+                try
+                {
+                    edo = TT[edo, carPointer];
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    edo = -1;
+                }
                 ManejarCadena(ref cadena, edo, car);
                 cont++;
             }
         }
         char anteriorCarac;
-        bool bandera = false;
+        bool yafue = false;
+        bool banderaDesconocido = false;
         public void ManejarCadena (ref List<char> cadena, int estado, char car) 
         {
             //FALTA IMPLEMENTAR MAS CAMPO DE ESTADO
             
             if (car == '\n')
                 lineCount++;
-            if (estado != 9 && estado != 8)
+            if (estado != 9 && estado != 8 && estado != -1)
             {
                 cadena.Add(car);
             }
             if (estado == 9)
             {
-                if (bandera)
-                {
-                    MessageBox.Show("ERROR");
-                    return;
-                }
                 string cadenaF = "";
                 //CheckPuntosFinales(ref cadena, car);
                 foreach (char caract in cadena)
                 {
                     cadenaF += caract;
                 }
-                if (cadenaF != "")
+                if (bandera && yafue == false)
                 {
-                    Aceptados(historialEstados.Last(), cadenaF, lineCount);
+                    Error.ElementoInvalido(TxtText, txtError, lineCount);
+                    yafue = true;
+                    return;
                 }
-                if (car == '+' || car == '-' || car == '*' || car == '/') CheckOperadores(car, lineCount);
-                if (car == '(' || car == ')' || car == ';') CheckDelimitadores(car, lineCount);
-                cadena.Clear();
-                EDO = 0;
+                else if (banderaDesconocido && yafue == false)
+                {
+                    Error.SimboloDesconocido(TxtText, txtError, lineCount);
+                    yafue = true;
+                    return;
+                }
+                else if (yafue == false)
+                {
+                    if (cadenaF != "")
+                    {
+                        Aceptados(historialEstados.Last(), cadenaF, lineCount);
+                    }
+                    if (car == '+' || car == '-' || car == '*' || car == '/') CheckOperadores(car, lineCount);
+                    if (car == '(' || car == ')' || car == ';') CheckDelimitadores(car, lineCount);
+                    cadena.Clear();
+                    EDO = 0;
+                }
             }
             if (estado == 8)
             {
                 bandera = true;
                 cadena.Add(car);
+            }
+            if (estado == -1)
+            {
+                banderaDesconocido = true;
+                cadena.Add(car);
+                EDO = 0;
             }
             anteriorCarac = car;
             historialEstados.Add(EDO);
@@ -303,7 +330,7 @@ namespace Analizador_Lexico
             if (nums.Contains(cara)) return 8;
             if (cara == 'E'|| cara == 'e') return 9;
             if (cara == '.') return 10;
-            return 0;
+            return 11; // algo que no va
         }
 
         private void BtnReset_Click(object sender, EventArgs e)
