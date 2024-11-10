@@ -20,18 +20,18 @@ namespace Analizador_Lexico
         Errores Error = new Errores();
         int[,] tablaT =
         {
-//            (  )  ;  +  -  *  /  L  d  E  .  n
-            { 9, 9, 9, 9, 9, 9, 9, 2, 1, 2, 5, 9}, // q0
-            { 9, 9, 9, 9, 9, 9, 9, 8, 1, 3, 5, 9}, // q1
-            { 9, 9, 9, 9, 9, 9, 9, 2, 7, 2, 8, 9}, // q2
-            { 8, 8, 8, 8, 8, 8, 8, 8, 4, 8, 8, 9}, // q3
-            { 9, 9, 9, 9, 9, 9, 9, 8, 4, 8, 8, 9}, // q4
-            { 8, 8, 8, 8, 8, 8, 8, 8, 6, 8, 8, 9}, // q5
-            { 9, 9, 9, 9, 9, 9, 9, 8, 6, 3, 8, 9}, // q6
-            { 9, 9, 9, 9, 9, 9, 9, 8, 7, 8, 8, 9}, // q7
-            { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9}, // q8
-            { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9}, // q9
-            { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9}, // q10
+//            (  )  ;  +  -  *  /  L  d  E  .  n  ?
+            { 9, 9, 9, 9, 9, 9, 9, 2, 1, 2, 5, 9, 10}, // q0
+            { 9, 9, 9, 9, 9, 9, 9, 8, 1, 3, 5, 9, 10}, // q1
+            { 9, 9, 9, 9, 9, 9, 9, 2, 7, 2, 8, 9, 10}, // q2
+            { 8, 8, 8, 8, 8, 8, 8, 8, 4, 8, 8, 9, 10}, // q3
+            { 9, 9, 9, 9, 9, 9, 9, 8, 4, 8, 8, 9, 10}, // q4
+            { 8, 8, 8, 8, 8, 8, 8, 8, 6, 8, 8, 9, 10}, // q5
+            { 9, 9, 9, 9, 9, 9, 9, 8, 6, 3, 8, 9, 10}, // q6
+            { 9, 9, 9, 9, 9, 9, 9, 8, 7, 8, 8, 9, 10}, // q7
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10}, // q8
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10}, // q9
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10}, // q10
 
 
         };
@@ -125,14 +125,7 @@ namespace Analizador_Lexico
             {
                 char car = cad[cont];
                 int carPointer = CaracterCheck(car);
-                try
-                {
-                    edo = TT[edo, carPointer];
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    edo = -1;
-                }
+                edo = TT[edo, carPointer];
                 ManejarCadena(ref cadena, edo, car, cont);
                 cont++;
             }
@@ -142,7 +135,7 @@ namespace Analizador_Lexico
         
         public void ManejarCadena (ref List<char> cadena, int estado, char car, int conta) 
         {
-            if (estado != 9 && estado != 8 && estado != -1)
+            if (estado != 9 && estado != 8 && estado != 10)
             {
                 cadena.Add(car);
             }
@@ -182,7 +175,7 @@ namespace Analizador_Lexico
                 bandera = true;
                 cadena.Add(car);
             }
-            if (estado == -1)
+            if (estado == 10)
             {
                 banderaDesconocido = true;
                 cadena.Add(car);
